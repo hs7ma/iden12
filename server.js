@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 // متغير لحفظ آخر نتيجة تعرف
 let lastRecognitionResult = {
   object: 'في انتظار...',
+  objectEnglish: 'Waiting...',
   confidence: '0.00',
   timestamp: Date.now(),
   message: 'في انتظار أول صورة'
@@ -291,6 +292,7 @@ async function recognizeImage(imagePath) {
     );
 
     const objectName = translateObject(bestPrediction.class);
+    const objectEnglish = bestPrediction.class; // الاسم الإنجليزي الأصلي
     const confidence = bestPrediction.score.toFixed(2);
 
     // إذا كان هناك أكثر من كائن، أضف معلومات إضافية
@@ -304,14 +306,16 @@ async function recognizeImage(imagePath) {
     }
 
     console.log(`تم التعرف على ${predictions.length} كائن(ات)`);
-    console.log(`أفضل نتيجة: ${objectName} - ${confidence}`);
+    console.log(`أفضل نتيجة: ${objectName} (${objectEnglish}) - ${confidence}`);
 
     return {
       object: objectName,
+      objectEnglish: objectEnglish, // إضافة النسخة الإنجليزية
       confidence: confidence,
       message: message,
       allDetections: predictions.map(p => ({
         object: translateObject(p.class),
+        objectEnglish: p.class, // إضافة النسخة الإنجليزية
         confidence: p.score.toFixed(2)
       }))
     };
@@ -319,6 +323,7 @@ async function recognizeImage(imagePath) {
     console.error('خطأ في التعرف على الصورة:', error);
     return {
       object: 'غير معروف',
+      objectEnglish: 'Unknown',
       confidence: '0.00',
       message: `فشل التعرف: ${error.message}`
     };
@@ -417,6 +422,7 @@ app.post('/recognize', async (req, res) => {
     // حفظ آخر نتيجة
     lastRecognitionResult = {
       object: result.object,
+      objectEnglish: result.objectEnglish || result.object, // النسخة الإنجليزية
       confidence: result.confidence,
       timestamp: Date.now(),
       message: result.message
@@ -426,6 +432,7 @@ app.post('/recognize', async (req, res) => {
     res.json({
       success: true,
       object: result.object,
+      objectEnglish: result.objectEnglish || result.object, // إضافة النسخة الإنجليزية
       confidence: result.confidence,
       message: result.message
     });
@@ -494,6 +501,7 @@ app.get('/latest', (req, res) => {
   res.json({
     success: true,
     object: lastRecognitionResult.object,
+    objectEnglish: lastRecognitionResult.objectEnglish || lastRecognitionResult.object, // النسخة الإنجليزية
     confidence: lastRecognitionResult.confidence,
     timestamp: lastRecognitionResult.timestamp,
     message: lastRecognitionResult.message,
