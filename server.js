@@ -326,6 +326,22 @@ async function recognizeImage(imagePath) {
 }
 
 // نقطة النهاية لاستقبال الصور من ESP32
+// رسالة توضيحية عند الوصول إلى /recognize بـ GET
+app.get('/recognize', (req, res) => {
+  res.status(405).json({
+    success: false,
+    message: 'هذا الـ endpoint يستخدم POST فقط',
+    method: 'يجب استخدام POST لإرسال الصورة',
+    example: 'أرسل صورة JPEG كـ raw binary data في body الطلب',
+    endpoints: {
+      test: 'GET /test',
+      health: 'GET /health',
+      recognize: 'POST /recognize',
+      latest: 'GET /latest'
+    }
+  });
+});
+
 app.post('/recognize', async (req, res) => {
   let tempImagePath = null;
   
