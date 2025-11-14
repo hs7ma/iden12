@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سيرفر التعرف على الصور - ESP32-CAM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .status {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-right: 4px solid #667eea;
+        }
+        .endpoints {
+            margin-top: 30px;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-right: 3px solid #667eea;
+        }
+        .endpoint-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .endpoint-url {
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+        .method {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .method.get { background: #28a745; }
+        .method.post { background: #ffc107; color: #333; }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📷 سيرفر التعرف على الصور</h1>
+        <p class="subtitle">ESP32-CAM Object Recognition Server</p>
+        
+        <div class="status">
+            <strong>✅ السيرفر يعمل بشكل صحيح!</strong>
+            <p style="margin-top: 10px; color: #666;">جاهز لاستقبال الصور من ESP32-CAM</p>
+        </div>
+
+        <div class="endpoints">
+            <h2 style="margin-bottom: 20px; color: #333;">Endpoints المتاحة:</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    اختبار السيرفر
+                    <span class="method get">GET</span>
+                </div>
+                <div class="endpoint-url" id="test-url"></div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    حالة الصحة
+                    <span class="method get">GET</span>
+                </div>
+                <div class="endpoint-url" id="health-url"></div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    التعرف على الصور (من ESP32-CAM)
+                    <span class="method post">POST</span>
+                </div>
+                <div class="endpoint-url" id="recognize-url"></div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-title">
+                    آخر نتيجة (لـ ESP32 LCD)
+                    <span class="method get">GET</span>
+                </div>
+                <div class="endpoint-url" id="latest-url"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>تم النشر على Railway</p>
+            <p style="margin-top: 5px;">استخدم هذه الروابط في كود ESP32</p>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = window.location.origin;
+        document.getElementById('test-url').textContent = baseUrl + '/test';
+        document.getElementById('health-url').textContent = baseUrl + '/health';
+        document.getElementById('recognize-url').textContent = baseUrl + '/recognize';
+        document.getElementById('latest-url').textContent = baseUrl + '/latest';
+    </script>
+</body>
+</html>
+
