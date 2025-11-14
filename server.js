@@ -433,6 +433,25 @@ app.post('/recognize', async (req, res) => {
   }
 });
 
+// نقطة نهاية للصفحة الرئيسية
+app.get('/', (req, res) => {
+  const indexPath = path.join(__dirname, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.json({
+      status: 'السيرفر يعمل',
+      message: 'مرحباً من سيرفر التعرف على الصور',
+      endpoints: {
+        test: '/test',
+        health: '/health',
+        recognize: 'POST /recognize',
+        latest: '/latest'
+      }
+    });
+  }
+});
+
 // نقطة نهاية للاختبار
 app.get('/test', (req, res) => {
   res.json({ 
