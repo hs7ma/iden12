@@ -279,6 +279,7 @@ async function recognizeImage(imagePath) {
       console.log('   - تأكد من أن الصورة واضحة وغير ضبابية');
       return {
         object: 'لا شيء',
+        objectEnglish: 'Nothing', // إضافة النسخة الإنجليزية
         confidence: '0.00',
         message: 'لم يتم التعرف على أي شيء في الصورة. تأكد من وجود أشياء واضحة وإضاءة جيدة.'
       };
@@ -428,6 +429,12 @@ app.post('/recognize', async (req, res) => {
       message: result.message
     };
     
+    // طباعة ما تم حفظه
+    console.log('[POST /recognize] تم حفظ النتيجة:');
+    console.log(`  object (Arabic): "${lastRecognitionResult.object}"`);
+    console.log(`  objectEnglish: "${lastRecognitionResult.objectEnglish}"`);
+    console.log(`  confidence: ${lastRecognitionResult.confidence}`);
+    
     // إرسال النتيجة إلى ESP32-CAM
     res.json({
       success: true,
@@ -497,16 +504,29 @@ app.get('/health', (req, res) => {
 });
 
 // نقطة نهاية للحصول على آخر نتيجة (لـ ESP32 مع LCD)
+// يرسل النسخة الإنجليزية فقط لـ ESP32
 app.get('/latest', (req, res) => {
-  res.json({
+  // استخدام النسخة الإنجليزية فقط لـ ESP32
+  const objectEnglish = lastRecognitionResult.objectEnglish || lastRecognitionResult.object;
+  
+  const response = {
     success: true,
-    object: lastRecognitionResult.object,
-    objectEnglish: lastRecognitionResult.objectEnglish || lastRecognitionResult.object, // النسخة الإنجليزية
+    object: objectEnglish, // إرسال النسخة الإنجليزية في حقل object
+    objectEnglish: objectEnglish, // أيضاً في objectEnglish للتوافق
     confidence: lastRecognitionResult.confidence,
     timestamp: lastRecognitionResult.timestamp,
     message: lastRecognitionResult.message,
     age: Date.now() - lastRecognitionResult.timestamp  // عمر النتيجة بالمللي ثانية
-  });
+  };
+  
+  // طباعة ما يتم إرساله للتحقق
+  console.log('\n[GET /latest] إرسال النتيجة إلى ESP32 (إنجليزي فقط):');
+  console.log(`  object: "${response.object}" (English)`);
+  console.log(`  objectEnglish: "${response.objectEnglish}"`);
+  console.log(`  confidence: ${response.confidence}`);
+  console.log(`  age: ${(response.age / 1000).toFixed(1)} seconds\n`);
+  
+  res.json(response);
 });
 
 // بدء السيرفر بعد تحميل النموذج
